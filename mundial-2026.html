@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mundial 2026 — App para Android | JottaDev</title>
+  <meta name="description" content="La app del Mundial 2026. Fixture, tabla, llaves, prode y notificaciones en vivo. Gratis y sin publicidad.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --night:      oklch(0.16 0.024 264);
+      --night-deep: oklch(0.11 0.020 264);
+      --night-2:    oklch(0.21 0.030 264);
+      --panel:      oklch(0.24 0.032 264);
+      --line:       oklch(0.36 0.030 264);
+      --cobalt:     oklch(0.60 0.190 256);
+      --cobalt-br:  oklch(0.70 0.180 252);
+      --lime:       oklch(0.88 0.210 128);
+      --lime-deep:  oklch(0.80 0.190 132);
+      --text:       oklch(0.98 0.008 250);
+      --muted:      oklch(0.74 0.022 256);
+      --muted-2:    oklch(0.60 0.022 256);
+      --magenta:    oklch(0.66 0.220 8);
+      --ease: cubic-bezier(.2,.7,.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--night-deep);
+      color: var(--text);
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO STAGE ── */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      width: 100%;
+      overflow: hidden;
+      isolation: isolate;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* background layers */
+    .bg-photo {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 90% 65% at 78% 22%, oklch(0.30 0.10 256 / .35), transparent 55%),
+        radial-gradient(ellipse 55% 70% at 10% 85%, oklch(0.22 0.09 140 / .18), transparent 52%),
+        linear-gradient(180deg, oklch(0.11 0.020 264), oklch(0.14 0.026 264));
+    }
+    .bg-photo::before {
+      content: '';
+      position: absolute;
+      right: 2%; top: -18%;
+      width: 55%; aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid oklch(0.88 0.21 128 / .07);
+      box-shadow: 0 0 90px oklch(0.60 0.19 256 / .07) inset;
+    }
+    .bg-photo::after {
+      content: '';
+      position: absolute;
+      right: 8%; top: 10%;
+      width: 38%; aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid oklch(0.60 0.19 256 / .09);
+    }
+    .bg-tint {
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        radial-gradient(120% 90% at 78% 18%, oklch(0.60 0.19 256 / .28), transparent 55%),
+        radial-gradient(90% 80% at 8% 92%,  oklch(0.80 0.19 132 / .12), transparent 55%),
+        linear-gradient(180deg, oklch(0.12 0.022 264 / .65) 0%, oklch(0.12 0.022 264 / .80) 48%, var(--night-deep) 100%);
+    }
+    .beam {
+      position: absolute; z-index: 1; top: -22%; width: 46%; height: 150%;
+      background: linear-gradient(180deg, oklch(0.7 0.18 252 / .10), transparent 62%);
+      filter: blur(14px); pointer-events: none; mix-blend-mode: screen;
+    }
+    .beam.b1 { left: 54%; transform: rotate(15deg); }
+    .beam.b2 { left: 74%; transform: rotate(8deg); opacity: .7; }
+    .pitch {
+      position: absolute; z-index: 1; left: -12%; bottom: -46%;
+      width: 64vh; height: 64vh; border-radius: 50%;
+      border: 2px solid oklch(0.88 0.21 128 / .14);
+      box-shadow: 0 0 60px oklch(0.88 0.21 128 / .05) inset;
+      pointer-events: none;
+    }
+    .grain {
+      position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: .45;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.5'/></svg>");
+      mix-blend-mode: overlay;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: relative; z-index: 5;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      padding: 26px clamp(22px, 5vw, 72px) 0;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+    .brand .mark {
+      width: 34px; height: 34px; border-radius: 9px; position: relative;
+      background: conic-gradient(from 210deg, var(--cobalt), var(--lime), var(--cobalt-br), var(--cobalt));
+      box-shadow: 0 4px 18px oklch(0.60 0.19 256 / .5);
+      display: grid; place-items: center;
+    }
+    .brand .mark::after {
+      content: ""; position: absolute; inset: 5px; border-radius: 6px;
+      background: var(--night-deep);
+    }
+    .brand .mark span { position: relative; z-index: 1; font-family: "Anton"; font-size: 15px; color: var(--text); }
+    .brand b { font-family: "Archivo"; font-weight: 800; font-size: 17px; letter-spacing: .06em; color: var(--text); }
+    .brand b i { color: var(--lime); font-style: normal; }
+    .nav-links { display: flex; gap: 34px; align-items: center; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 14.5px; font-weight: 500;
+      letter-spacing: .01em; transition: color .2s var(--ease); position: relative;
+    }
+    .nav-links a::after {
+      content: ""; position: absolute; left: 0; bottom: -6px; height: 2px; width: 0;
+      background: var(--lime); transition: width .25s var(--ease);
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      font-family: "Space Grotesk"; font-weight: 700; font-size: 14px;
+      color: var(--night-deep); background: var(--lime);
+      border: none; border-radius: 999px; padding: 11px 20px; cursor: pointer;
+      letter-spacing: .01em; text-decoration: none;
+      transition: transform .18s var(--ease), box-shadow .25s var(--ease);
+      box-shadow: 0 6px 22px oklch(0.88 0.21 128 / .28);
+    }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 30px oklch(0.88 0.21 128 / .42); }
+    @media (max-width: 880px) { .nav-links { display: none; } }
+
+    /* ── MAIN GRID ── */
+    .wrap {
+      position: relative; z-index: 5; flex: 1;
+      display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+      align-items: center; gap: clamp(20px, 4vw, 64px);
+      padding: clamp(18px, 3vh, 40px) clamp(22px, 5vw, 72px) clamp(28px, 4vh, 56px);
+      max-width: 1480px; margin: 0 auto; width: 100%;
+    }
+
+    /* ── COPY ── */
+    .kicker {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-size: 12.5px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--lime); margin-bottom: 26px;
+    }
+    .kicker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 10px var(--lime); }
+    .kicker .sep { color: var(--muted-2); letter-spacing: 0; }
+    .kicker .host { color: var(--muted); font-weight: 500; letter-spacing: .14em; }
+
+    h1 {
+      font-family: "Anton"; font-weight: 400; text-transform: uppercase;
+      line-height: .86; letter-spacing: .005em; color: var(--text);
+    }
+    h1 .l1 { display: block; font-size: clamp(24px, 3.7vw, 50px); color: var(--muted); letter-spacing: .04em; }
+    h1 .l2 {
+      display: block; font-size: clamp(58px, 9.6vw, 142px); white-space: nowrap;
+      background: linear-gradient(176deg, var(--text) 30%, oklch(0.86 0.02 256) 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 6px 30px oklch(0.6 0.19 256 / .25));
+    }
+    h1 .l2 em {
+      font-style: normal; display: block;
+      background: linear-gradient(176deg, var(--lime) 10%, var(--lime-deep) 90%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 22px oklch(0.88 0.21 128 / .4));
+    }
+    h1 .l3 {
+      display: block; font-size: clamp(24px, 3.7vw, 50px); letter-spacing: .04em;
+      color: var(--text); -webkit-text-stroke: 0; margin-top: .06em;
+    }
+
+    .tagline {
+      margin-top: 26px; max-width: 34ch;
+      font-size: clamp(15px, 1.25vw, 18.5px); line-height: 1.55; color: var(--muted);
+      font-weight: 400; text-wrap: pretty;
+    }
+    .tagline b { color: var(--text); font-weight: 600; }
+
+    .feats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 9px 15px 9px 12px; border-radius: 999px;
+      background: oklch(0.24 0.032 264 / .6); border: 1px solid var(--line);
+      font-size: 13.5px; font-weight: 500; color: var(--text);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      transition: border-color .2s var(--ease), transform .2s var(--ease), background .2s var(--ease);
+    }
+    .chip:hover { transform: translateY(-2px); border-color: var(--cobalt-br); background: oklch(0.24 0.032 264 / .85); }
+    .chip svg { width: 16px; height: 16px; flex: none; color: var(--lime); }
+
+    .stores { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; align-items: center; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 12px 22px 12px 18px; border-radius: 14px; cursor: pointer;
+      background: var(--text); color: var(--night-deep); text-decoration: none;
+      transition: transform .18s var(--ease), box-shadow .25s var(--ease);
+      box-shadow: 0 10px 30px oklch(0 0 0 / .45);
+    }
+    .badge:hover { transform: translateY(-3px); box-shadow: 0 16px 40px oklch(0 0 0 / .55); }
+    .badge svg { width: 26px; height: 26px; flex: none; }
+    .badge .txt { display: flex; flex-direction: column; line-height: 1.05; }
+    .badge .txt small { font-size: 9.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; opacity: .62; margin-bottom: 2px; }
+    .badge .txt span { font-family: "Archivo"; font-weight: 800; font-size: 18px; letter-spacing: .01em; }
+    .badge-soon {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 12px 22px 12px 18px; border-radius: 14px;
+      background: oklch(0.22 0.032 264); border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .badge-soon svg { width: 26px; height: 26px; flex: none; }
+    .badge-soon .txt { display: flex; flex-direction: column; line-height: 1.05; }
+    .badge-soon .txt small { font-size: 9.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; opacity: .5; margin-bottom: 2px; }
+    .badge-soon .txt span { font-family: "Archivo"; font-weight: 700; font-size: 15px; letter-spacing: .01em; }
+
+    /* ── PHONE ── */
+    .phone-col { display: flex; justify-content: center; align-items: center; position: relative; }
+    .glow {
+      position: absolute; width: 108%; height: 108%; border-radius: 50%;
+      background: radial-gradient(circle, oklch(0.6 0.19 256 / .38), transparent 62%);
+      filter: blur(30px); z-index: 0;
+    }
+    .phone {
+      position: relative; z-index: 1;
+      width: clamp(258px, 25vw, 340px); aspect-ratio: 296/620;
+      border-radius: 46px; padding: 13px;
+      background: linear-gradient(160deg, oklch(0.30 0.02 264), oklch(0.16 0.02 264));
+      box-shadow:
+        0 2px 0 oklch(0.42 0.02 264) inset,
+        0 40px 90px -20px oklch(0 0 0 / .7),
+        0 0 0 1px oklch(0.42 0.02 264);
+      transform: rotate(3deg) translateY(0);
+    }
+    .screen {
+      position: relative; width: 100%; height: 100%; border-radius: 34px; overflow: hidden;
+      background: var(--night); display: flex; flex-direction: column;
+    }
+    .notch {
+      position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+      width: 96px; height: 24px; border-radius: 999px; background: oklch(0.08 0.01 264); z-index: 9;
+    }
+    .stat {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 13px 20px 6px; font-size: 12.5px; font-weight: 600; color: var(--text); z-index: 3;
+    }
+    .stat .ic-row { display: flex; gap: 6px; align-items: center; }
+    .stat svg { width: 15px; height: 13px; fill: var(--text); }
+    .app-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 18px 12px;
+    }
+    .app-head .logo { display: flex; align-items: center; gap: 7px; font-family: "Archivo"; font-weight: 800; font-size: 14.5px; letter-spacing: .04em; }
+    .app-head .logo i { color: var(--lime); font-style: normal; }
+    .app-head .av { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--cobalt), var(--magenta)); border: 1.5px solid var(--line); }
+
+    .live-card {
+      position: relative; margin: 0 14px; border-radius: 20px; overflow: hidden;
+      border: 1px solid oklch(0.88 0.21 128 / .22);
+      box-shadow: 0 12px 30px -12px oklch(0 0 0 / .7);
+    }
+    .live-card .lc-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, oklch(0.18 0.08 256), oklch(0.14 0.05 140 / .6));
+    }
+    .live-card .lc-tint {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, oklch(0.14 0.03 264 / .4), oklch(0.12 0.03 264 / .9));
+    }
+    .lc-inner { position: relative; padding: 13px 15px 15px; }
+    .lc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; }
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--magenta); color: #fff; font-size: 9.5px; font-weight: 700;
+      letter-spacing: .08em; padding: 4px 9px; border-radius: 6px; text-transform: uppercase;
+    }
+    .live-badge .pulse { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: pulse 1.4s infinite; }
+    .lc-min { font-size: 11px; color: var(--lime); font-weight: 600; letter-spacing: .04em; }
+    .lc-score { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; }
+    .team { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+    .team .flag { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; font-family: "Archivo"; font-weight: 800; font-size: 13px; color: #fff; border: 1px solid oklch(1 0 0 / .14); }
+    .team .nm { font-size: 11.5px; font-weight: 600; color: var(--text); letter-spacing: .02em; }
+    .score { font-family: "Anton"; font-size: 38px; line-height: 1; letter-spacing: .02em; display: flex; gap: 7px; }
+    .score .x { color: var(--muted-2); font-size: 24px; align-self: center; }
+
+    .tabs { display: flex; gap: 7px; padding: 14px 16px 8px; }
+    .tab { font-size: 12px; font-weight: 600; color: var(--muted); padding: 7px 13px; border-radius: 999px; letter-spacing: .01em; }
+    .tab.on { background: var(--cobalt); color: #fff; box-shadow: 0 4px 14px oklch(0.6 0.19 256 / .5); }
+
+    .fixtures { padding: 2px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .fx {
+      display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px;
+      background: var(--night-2); border: 1px solid var(--line); border-radius: 13px; padding: 10px 12px;
+    }
+    .fx .pair { display: flex; align-items: center; gap: 8px; }
+    .fx .mini { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-family: "Archivo"; font-weight: 800; font-size: 9.5px; color: #fff; }
+    .fx .vs { font-size: 10px; color: var(--muted-2); font-weight: 600; }
+    .fx .codes b { font-size: 11.5px; font-weight: 600; color: var(--text); letter-spacing: .03em; }
+    .fx .time { text-align: right; }
+    .fx .time b { display: block; font-size: 12.5px; font-weight: 700; color: var(--text); }
+    .fx .time small { font-size: 9.5px; color: var(--muted); letter-spacing: .04em; }
+
+    .bnav { margin-top: auto; display: flex; justify-content: space-around; align-items: center; padding: 11px 14px 16px; border-top: 1px solid var(--line); background: oklch(0.18 0.026 264 / .9); }
+    .bnav .bi { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--muted-2); }
+    .bnav .bi.on { color: var(--lime); }
+    .bnav .bi svg { width: 21px; height: 21px; }
+    .bnav .bi small { font-size: 8.5px; font-weight: 600; letter-spacing: .02em; }
+
+    .notif {
+      position: absolute; z-index: 4; left: -42px; top: 68%;
+      display: flex; align-items: center; gap: 10px;
+      background: oklch(0.22 0.03 264 / .92); border: 1px solid var(--line);
+      border-radius: 14px; padding: 10px 14px; backdrop-filter: blur(10px);
+      box-shadow: 0 16px 36px -12px oklch(0 0 0 / .7); max-width: 188px;
+    }
+    .notif .go { width: 30px; height: 30px; border-radius: 9px; background: var(--lime); display: grid; place-items: center; flex: none; }
+    .notif .go b { font-family: "Anton"; color: var(--night-deep); font-size: 16px; }
+    .notif .tx b { display: block; font-size: 11.5px; color: var(--text); font-weight: 700; }
+    .notif .tx small { font-size: 10px; color: var(--muted); }
+    @media (max-width: 1180px) { .notif { display: none; } }
+
+    /* ── HOSTS STRIP ── */
+    .hosts {
+      position: relative; z-index: 5; display: flex; align-items: center; gap: 22px;
+      padding: 0 clamp(22px, 5vw, 72px) 22px; color: var(--muted-2); font-size: 12px; letter-spacing: .04em;
+    }
+    .hosts .ln { flex: 1; height: 1px; background: var(--line); }
+    .hosts b { color: var(--muted); font-weight: 600; letter-spacing: .18em; text-transform: uppercase; font-size: 11px; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 5; border-top: 1px solid var(--line);
+      padding: 22px clamp(22px, 5vw, 72px);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      color: var(--muted-2); font-size: 12.5px;
+    }
+    footer a { color: var(--muted-2); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+    footer .flinks { display: flex; gap: 24px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 980px) {
+      .wrap { grid-template-columns: 1fr; gap: 36px; padding-top: 24px; }
+      .phone-col { order: -1; }
+      .phone { transform: rotate(0deg); }
+      .tagline { max-width: 46ch; }
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .3; transform: scale(.7); } }
+    @keyframes floaty { 0%, 100% { transform: rotate(3deg) translateY(0); } 50% { transform: rotate(3deg) translateY(-12px); } }
+    @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .in .reveal { animation: rise .8s var(--ease) both; animation-delay: var(--d, 0ms); }
+      .in .phone  { animation: floaty 7s ease-in-out infinite 1.1s; }
+    }
+  </style>
+</head>
+<body>
+
+<section class="hero" id="hero">
+  <div class="bg-photo"></div>
+  <div class="bg-tint"></div>
+  <div class="beam b1"></div>
+  <div class="beam b2"></div>
+  <div class="pitch"></div>
+  <div class="grain"></div>
+
+  <!-- NAV -->
+  <nav class="reveal" style="--d:0ms">
+    <a class="brand" href="/">
+      <span class="mark"><span>J</span></span>
+      <b>JOTTA<i>DEV</i></b>
+    </a>
+    <div class="nav-links">
+      <a href="#funciones">Funciones</a>
+      <a href="/">Otras apps</a>
+      <a href="/privacy.html">Privacidad</a>
+    </div>
+    <a class="nav-cta" href="#descargar">Descargar</a>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="wrap">
+
+    <!-- COPY -->
+    <div class="copy">
+      <div class="kicker reveal" style="--d:80ms">
+        <span class="dot"></span>
+        11 Jun – 19 Jul 2026
+        <span class="sep">·</span>
+        <span class="host">USA · Canadá · México</span>
+      </div>
+
+      <h1>
+        <span class="l1 reveal" style="--d:160ms">Vive el</span>
+        <span class="l2 reveal" style="--d:240ms">Mundial <em>2026</em></span>
+        <span class="l3 reveal" style="--d:320ms">en tu mano</span>
+      </h1>
+
+      <p class="tagline reveal" style="--d:420ms">
+        Todo el torneo, en tu bolsillo. <b>Resultados en vivo</b>, calendario completo,
+        llaves eliminatorias y tu <b>prode</b> de principio a final. Gratis. Sin publicidad.
+      </p>
+
+      <div class="feats reveal" id="funciones" style="--d:500ms">
+        <span class="chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z"/><path d="M12 7v5l3 2"/></svg>
+          Resultados en vivo
+        </span>
+        <span class="chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+          Calendario
+        </span>
+        <span class="chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v6a6 6 0 0 0 12 0V3M4 21h16M9 21v-3a3 3 0 0 1 6 0v3"/></svg>
+          Llaves
+        </span>
+        <span class="chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          Prode
+        </span>
+        <span class="chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+          Mi Selección
+        </span>
+      </div>
+
+      <div class="stores reveal" id="descargar" style="--d:580ms">
+        <a class="badge" href="https://play.google.com/store/apps/details?id=com.jottadev.mundial2026" target="_blank" rel="noopener" aria-label="Disponible en Google Play">
+          <svg viewBox="0 0 24 24">
+            <path fill="#34A853" d="M3.6 2.3 13 11.7l-2.7 2.7L3 4.2c-.2-.6 0-1.5.6-1.9Z"/>
+            <path fill="#4285F4" d="M3.6 2.3c.2-.1.5-.2.8-.2.3 0 .6.1.9.3l9.5 5.4-2.5 2.5L3.6 2.3Z"/>
+            <path fill="#FBBC04" d="M20.3 10.3c.7.4 1.1 1 1.1 1.7s-.4 1.3-1.1 1.7l-2.6 1.5-2.8-2.8 2.8-2.8 2.6 1.5Z"/>
+            <path fill="#EA4335" d="M3.6 21.7 12.3 13l2.5 2.5-9.4 5.4c-.3.2-.6.3-.9.3-.3 0-.6-.1-.9-.5Z"/>
+          </svg>
+          <span class="txt"><small>Disponible en</small><span>Google Play</span></span>
+        </a>
+        <div class="badge-soon" aria-label="Próximamente en App Store">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16.5 1.5c.1 1-.3 2-1 2.8-.7.8-1.8 1.4-2.8 1.3-.1-1 .4-2 1-2.7.7-.8 1.9-1.4 2.8-1.4ZM20 17.4c-.5 1.2-.8 1.7-1.5 2.7-1 1.4-2.3 3.1-4 3.1-1.5 0-1.9-1-3.9-1-2 0-2.4 1-3.9 1-1.7 0-3-1.6-4-3-2.6-4-2.9-8.6-1.3-11.1 1.1-1.7 2.9-2.7 4.5-2.7 1.7 0 2.8 1 4.2 1 1.4 0 2.2-1 4.2-1 1.5 0 3 .8 4.1 2.2-3.6 2-3 7 1.5 8.8Z"/>
+          </svg>
+          <span class="txt"><small>Próximamente en</small><span>App Store</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHONE -->
+    <div class="phone-col reveal" style="--d:300ms">
+      <div class="glow"></div>
+
+      <div class="phone">
+        <div class="notif">
+          <span class="go"><b>⚽</b></span>
+          <span class="tx">
+            <b>¡GOOOL de Argentina!</b>
+            <small>ARG 1 – 0 AUS · 34'</small>
+          </span>
+        </div>
+
+        <div class="screen">
+          <div class="notch"></div>
+
+          <!-- status bar -->
+          <div class="stat">
+            <span>9:41</span>
+            <span class="ic-row">
+              <svg viewBox="0 0 24 16"><rect x="1" y="6" width="3" height="10" rx="1"/><rect x="6" y="3" width="3" height="13" rx="1"/><rect x="11" y="0" width="3" height="16" rx="1"/><rect x="16" y="3" width="3" height="13" rx="1" opacity=".4"/></svg>
+              <svg viewBox="0 0 24 16"><path d="M12 2C7 2 3 5 1 8c2 3 6 6 11 6s9-3 11-6c-2-3-6-6-11-6Z" opacity=".35"/><path d="M12 4c4 0 7.5 2.3 9.3 4-1.8 1.7-5.3 4-9.3 4S4.5 9.7 2.7 8C4.5 6.3 8 4 12 4Z"/></svg>
+              <svg viewBox="0 0 24 16"><rect x="1" y="2" width="20" height="12" rx="3" opacity=".5"/><rect x="3" y="4" width="14" height="8" rx="1.5"/><rect x="22" y="6" width="2" height="4" rx="1"/></svg>
+            </span>
+          </div>
+
+          <!-- app header -->
+          <div class="app-head">
+            <span class="logo">MUNDIAL<i>26</i></span>
+            <span class="av"></span>
+          </div>
+
+          <!-- live match -->
+          <div class="live-card">
+            <div class="lc-bg"></div>
+            <div class="lc-tint"></div>
+            <div class="lc-inner">
+              <div class="lc-top">
+                <span class="live-badge"><span class="pulse"></span> En vivo</span>
+                <span class="lc-min">34'</span>
+              </div>
+              <div class="lc-score">
+                <div class="team">
+                  <span class="flag" style="background:linear-gradient(135deg,#74acdf,#fff 50%,#74acdf);color:#74acdf">ARG</span>
+                  <span class="nm">Argentina</span>
+                </div>
+                <div class="score">1 <span class="x">–</span> 0</div>
+                <div class="team">
+                  <span class="flag" style="background:linear-gradient(135deg,#003f8a,#fff 50%,#003f8a);color:#fff">AUS</span>
+                  <span class="nm">Australia</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- tabs -->
+          <div class="tabs">
+            <span class="tab on">Hoy</span>
+            <span class="tab">Tabla</span>
+            <span class="tab">Llaves</span>
+          </div>
+
+          <!-- fixtures -->
+          <div class="fixtures">
+            <div class="fx">
+              <div class="pair">
+                <span class="mini" style="background:linear-gradient(135deg,#006847,#ce1126)">MEX</span>
+                <span class="vs">vs</span>
+                <span class="mini" style="background:linear-gradient(135deg,#007a4d,#ffb81c)">ZAF</span>
+              </div>
+              <div class="codes"><b>México · Sudáfrica</b></div>
+              <div class="time"><b>19:00</b><small>Dallas</small></div>
+            </div>
+            <div class="fx">
+              <div class="pair">
+                <span class="mini" style="background:linear-gradient(135deg,#aa151b,#f1bf00)">ESP</span>
+                <span class="vs">vs</span>
+                <span class="mini" style="background:linear-gradient(135deg,#0055a4,#fff 50%,#ef4135)">FRA</span>
+              </div>
+              <div class="codes"><b>España · Francia</b></div>
+              <div class="time"><b>22:00</b><small>MetLife</small></div>
+            </div>
+            <div class="fx">
+              <div class="pair">
+                <span class="mini" style="background:linear-gradient(135deg,#003DA5,#fff 50%,#003DA5)">BRA</span>
+                <span class="vs">vs</span>
+                <span class="mini" style="background:linear-gradient(135deg,#dc143c,#fff 50%,#dc143c)">ENG</span>
+              </div>
+              <div class="codes"><b>Brasil · Inglaterra</b></div>
+              <div class="time"><b>02:00</b><small>SoFi</small></div>
+            </div>
+          </div>
+
+          <!-- bottom nav -->
+          <div class="bnav">
+            <div class="bi on">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+              <small>Fixture</small>
+            </div>
+            <div class="bi">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+              <small>Tabla</small>
+            </div>
+            <div class="bi">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v6a6 6 0 0 0 12 0V3M4 21h16M9 21v-3a3 3 0 0 1 6 0v3"/></svg>
+              <small>Llaves</small>
+            </div>
+            <div class="bi">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+              <small>País</small>
+            </div>
+            <div class="bi">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+              <small>Más</small>
+            </div>
+          </div>
+        </div><!-- /screen -->
+      </div><!-- /phone -->
+    </div><!-- /phone-col -->
+  </div><!-- /wrap -->
+
+  <!-- HOSTS STRIP -->
+  <div class="hosts reveal" style="--d:660ms">
+    <b>48 selecciones</b><span class="ln"></span>
+    <b>16 sedes</b><span class="ln"></span>
+    <b>104 partidos</b>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 JottaDev · <a href="/">Todas las apps</a></span>
+  <div class="flinks">
+    <a href="/privacy.html">Política de Privacidad</a>
+    <a href="mailto:jottadev.io@gmail.com">Contacto</a>
+  </div>
+</footer>
+
+<script>
+  requestAnimationFrame(() => document.getElementById('hero').classList.add('in'));
+</script>
+</body>
+</html>
