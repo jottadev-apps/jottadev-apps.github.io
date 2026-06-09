@@ -220,14 +220,18 @@
     .group-row .fl { font-size: 20px; line-height: 1; }
 
     /* ─── SEDES ─── */
-    .venues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 36px; }
-    .venue-card { background: var(--night-2); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 6px; transition: border-color .2s; }
-    .venue-card:hover { border-color: var(--cobalt); }
+    .venues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; margin-top: 36px; }
+    .venue-card { background: var(--night-2); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; transition: border-color .2s, transform .2s; }
+    .venue-card:hover { border-color: var(--cobalt); transform: translateY(-3px); }
+    .venue-img { width: 100%; height: 170px; overflow: hidden; position: relative; background: var(--panel); }
+    .venue-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s var(--ease); }
+    .venue-card:hover .venue-img img { transform: scale(1.06); }
+    .venue-info { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 5px; flex: 1; }
     .venue-top { display: flex; align-items: center; justify-content: space-between; }
-    .venue-flag { font-size: 28px; }
-    .venue-cap { font-size: 12px; color: var(--lime); font-weight: 700; letter-spacing: .04em; }
-    .venue-city { font-family: "Archivo"; font-weight: 800; font-size: 17px; }
-    .venue-stadium { font-size: 13px; color: var(--muted); }
+    .venue-flag { font-size: 22px; }
+    .venue-cap { font-size: 11.5px; color: var(--lime); font-weight: 700; letter-spacing: .04em; }
+    .venue-city { font-family: "Archivo"; font-weight: 800; font-size: 16px; }
+    .venue-stadium { font-size: 12.5px; color: var(--muted); }
 
     /* ─── API TRANSPARENCY ─── */
     .api-box {
@@ -604,84 +608,132 @@
 
     <div class="venues-grid">
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">94 000</span></div>
-        <div class="venue-city">Dallas</div>
-        <div class="venue-stadium">AT&T Stadium</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Arlington_June_2020_4_%28AT%26T_Stadium%29.jpg/330px-Arlington_June_2020_4_%28AT%26T_Stadium%29.jpg" alt="AT&T Stadium" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">94 000</span></div>
+          <div class="venue-city">Dallas</div>
+          <div class="venue-stadium">AT&amp;T Stadium</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">82 500 · FINAL</span></div>
-        <div class="venue-city">Nueva York / New Jersey</div>
-        <div class="venue-stadium">MetLife Stadium</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Metlife_stadium_%28Aerial_view%29.jpg/330px-Metlife_stadium_%28Aerial_view%29.jpg" alt="MetLife Stadium" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap" style="color:oklch(0.88 0.21 128)">★ FINAL · 82 500</span></div>
+          <div class="venue-city">Nueva York / New Jersey</div>
+          <div class="venue-stadium">MetLife Stadium</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇲🇽</span><span class="venue-cap">83 000</span></div>
-        <div class="venue-city">Ciudad de México</div>
-        <div class="venue-stadium">Estadio Azteca</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Vista_a%C3%A9rea_del_Estadio_Azteca_-_2026_-_02.jpg/330px-Vista_a%C3%A9rea_del_Estadio_Azteca_-_2026_-_02.jpg" alt="Estadio Azteca" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇲🇽</span><span class="venue-cap">83 000</span></div>
+          <div class="venue-city">Ciudad de México</div>
+          <div class="venue-stadium">Estadio Azteca</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">75 000</span></div>
-        <div class="venue-city">Atlanta</div>
-        <div class="venue-stadium">Mercedes-Benz Stadium</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Mercedes_Benz_Stadium_time_lapse_capture_2017-08-13.jpg/330px-Mercedes_Benz_Stadium_time_lapse_capture_2017-08-13.jpg" alt="Mercedes-Benz Stadium" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">75 000</span></div>
+          <div class="venue-city">Atlanta</div>
+          <div class="venue-stadium">Mercedes-Benz Stadium</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">73 000</span></div>
-        <div class="venue-city">Kansas City</div>
-        <div class="venue-stadium">Arrowhead Stadium</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Aerial_view_of_Arrowhead_Stadium_08-31-2013.jpg/330px-Aerial_view_of_Arrowhead_Stadium_08-31-2013.jpg" alt="Arrowhead Stadium" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">73 000</span></div>
+          <div class="venue-city">Kansas City</div>
+          <div class="venue-stadium">Arrowhead Stadium</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">72 000</span></div>
-        <div class="venue-city">Houston</div>
-        <div class="venue-stadium">NRG Stadium</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Nrg_stadium.jpg/330px-Nrg_stadium.jpg" alt="NRG Stadium" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">72 000</span></div>
+          <div class="venue-city">Houston</div>
+          <div class="venue-stadium">NRG Stadium</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">71 000</span></div>
-        <div class="venue-city">San Francisco Bay Area</div>
-        <div class="venue-stadium">Levi's Stadium</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Levi%27s_Stadium_in_February_2016_prior_to_Super_Bowl_50_%2824398261729%29.jpg/330px-Levi%27s_Stadium_in_February_2016_prior_to_Super_Bowl_50_%2824398261729%29.jpg" alt="Levi's Stadium" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">71 000</span></div>
+          <div class="venue-city">San Francisco Bay Area</div>
+          <div class="venue-stadium">Levi's Stadium</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">70 000</span></div>
-        <div class="venue-city">Los Ángeles</div>
-        <div class="venue-stadium">SoFi Stadium</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/SoFi_Stadium_2023.jpg/330px-SoFi_Stadium_2023.jpg" alt="SoFi Stadium" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">70 000</span></div>
+          <div class="venue-city">Los Ángeles</div>
+          <div class="venue-stadium">SoFi Stadium</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">69 000</span></div>
-        <div class="venue-city">Philadelphia</div>
-        <div class="venue-stadium">Lincoln Financial Field</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Lincoln_Financial_Field_%28Aerial_view%29.jpg/330px-Lincoln_Financial_Field_%28Aerial_view%29.jpg" alt="Lincoln Financial Field" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">69 000</span></div>
+          <div class="venue-city">Philadelphia</div>
+          <div class="venue-stadium">Lincoln Financial Field</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">69 000</span></div>
-        <div class="venue-city">Seattle</div>
-        <div class="venue-stadium">Lumen Field</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/2025_FIFA_Club_World_Cup_-_Seattle_Sounders_FC_vs._Atl%C3%A9tico_Madrid_-_05.jpg/330px-2025_FIFA_Club_World_Cup_-_Seattle_Sounders_FC_vs._Atl%C3%A9tico_Madrid_-_05.jpg" alt="Lumen Field" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">69 000</span></div>
+          <div class="venue-city">Seattle</div>
+          <div class="venue-stadium">Lumen Field</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">65 000</span></div>
-        <div class="venue-city">Boston</div>
-        <div class="venue-stadium">Gillette Stadium</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Gillette_Stadium_%28Top_View%29.jpg/330px-Gillette_Stadium_%28Top_View%29.jpg" alt="Gillette Stadium" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">65 000</span></div>
+          <div class="venue-city">Boston</div>
+          <div class="venue-stadium">Gillette Stadium</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">65 000</span></div>
-        <div class="venue-city">Miami</div>
-        <div class="venue-stadium">Hard Rock Stadium</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Hard_Rock_Stadium_for_Super_Bowl_LIV_%2849606710103%29.jpg/330px-Hard_Rock_Stadium_for_Super_Bowl_LIV_%2849606710103%29.jpg" alt="Hard Rock Stadium" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">65 000</span></div>
+          <div class="venue-city">Miami</div>
+          <div class="venue-stadium">Hard Rock Stadium</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇨🇦</span><span class="venue-cap">54 000</span></div>
-        <div class="venue-city">Vancouver</div>
-        <div class="venue-stadium">BC Place</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/BC_Place_2015_Women%27s_FIFA_World_Cup.jpg/330px-BC_Place_2015_Women%27s_FIFA_World_Cup.jpg" alt="BC Place" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇨🇦</span><span class="venue-cap">54 000</span></div>
+          <div class="venue-city">Vancouver</div>
+          <div class="venue-stadium">BC Place</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇲🇽</span><span class="venue-cap">53 500</span></div>
-        <div class="venue-city">Monterrey</div>
-        <div class="venue-stadium">Estadio BBVA</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Mexico_Guadalupe_Monterrey_Estadio_BBVA_Bancomer_fifa_world_cup_2026_6.JPG/330px-Mexico_Guadalupe_Monterrey_Estadio_BBVA_Bancomer_fifa_world_cup_2026_6.JPG" alt="Estadio BBVA" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇲🇽</span><span class="venue-cap">53 500</span></div>
+          <div class="venue-city">Monterrey</div>
+          <div class="venue-stadium">Estadio BBVA</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇲🇽</span><span class="venue-cap">48 000</span></div>
-        <div class="venue-city">Guadalajara</div>
-        <div class="venue-stadium">Estadio Akron</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Estadio_Akron_02-07-2022_cabecera_sur_lado_derecho_%283%29.jpg/330px-Estadio_Akron_02-07-2022_cabecera_sur_lado_derecho_%283%29.jpg" alt="Estadio Akron" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇲🇽</span><span class="venue-cap">48 000</span></div>
+          <div class="venue-city">Guadalajara</div>
+          <div class="venue-stadium">Estadio Akron</div>
+        </div>
       </div>
       <div class="venue-card">
-        <div class="venue-top"><span class="venue-flag">🇨🇦</span><span class="venue-cap">45 000</span></div>
-        <div class="venue-city">Toronto</div>
-        <div class="venue-stadium">BMO Field</div>
+        <div class="venue-img"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Toronto_BMO_Field_in_2024.jpg/330px-Toronto_BMO_Field_in_2024.jpg" alt="BMO Field" loading="lazy"></div>
+        <div class="venue-info">
+          <div class="venue-top"><span class="venue-flag">🇨🇦</span><span class="venue-cap">45 000</span></div>
+          <div class="venue-city">Toronto</div>
+          <div class="venue-stadium">BMO Field</div>
+        </div>
       </div>
     </div>
   </div>
