@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mundial 2026 — App para Android | JottaDev</title>
-  <meta name="description" content="La app del Mundial 2026. Fixture, tabla, llaves, prode y notificaciones en vivo. Gratis y sin publicidad.">
+  <meta name="description" content="La app del FIFA World Cup 2026. Fixture, tabla, llaves, prode y notificaciones en vivo. Gratis y sin publicidad para Android.">
+  <link rel="canonical" href="https://jottadev-apps.github.io/mundial-2026.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,20 +15,20 @@
       --night-deep: oklch(0.11 0.020 264);
       --night-2:    oklch(0.21 0.030 264);
       --panel:      oklch(0.24 0.032 264);
-      --line:       oklch(0.36 0.030 264);
+      --line:       oklch(0.30 0.028 264);
       --cobalt:     oklch(0.60 0.190 256);
       --cobalt-br:  oklch(0.70 0.180 252);
       --lime:       oklch(0.88 0.210 128);
       --lime-deep:  oklch(0.80 0.190 132);
       --text:       oklch(0.98 0.008 250);
       --muted:      oklch(0.74 0.022 256);
-      --muted-2:    oklch(0.60 0.022 256);
+      --muted-2:    oklch(0.55 0.022 256);
       --magenta:    oklch(0.66 0.220 8);
-      --ease: cubic-bezier(.2,.7,.2,1);
+      --ease:       cubic-bezier(.2,.7,.2,1);
+      --px:         clamp(22px, 5vw, 72px);
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
+    html { scroll-behavior: smooth; }
     body {
       background: var(--night-deep);
       color: var(--text);
@@ -36,18 +37,37 @@
       overflow-x: hidden;
     }
 
-    /* ── HERO STAGE ── */
-    .hero {
-      position: relative;
-      min-height: 100svh;
-      width: 100%;
-      overflow: hidden;
-      isolation: isolate;
-      display: flex;
-      flex-direction: column;
+    /* ─── NAV ─── */
+    .topnav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      padding: 16px var(--px);
+      background: oklch(0.11 0.020 264 / .85);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     }
+    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+    .brand img { border-radius: 9px; display: block; box-shadow: 0 4px 14px oklch(0 0 0/.5); }
+    .brand b { font-family: "Archivo"; font-weight: 800; font-size: 17px; letter-spacing: .06em; color: var(--text); }
+    .brand b i { color: var(--lime); font-style: normal; }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      font-family: "Space Grotesk"; font-weight: 700; font-size: 14px;
+      color: var(--night-deep); background: var(--lime);
+      border: none; border-radius: 999px; padding: 10px 20px; cursor: pointer;
+      text-decoration: none; transition: transform .18s var(--ease), box-shadow .25s var(--ease);
+      box-shadow: 0 6px 22px oklch(0.88 0.21 128 / .28);
+    }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 30px oklch(0.88 0.21 128 / .42); }
+    @media (max-width: 860px) { .nav-links { display: none; } }
 
-    /* background layers */
+    /* ─── HERO ─── */
+    .hero {
+      position: relative; overflow: hidden; isolation: isolate;
+      min-height: 92svh; display: flex; flex-direction: column;
+    }
     .bg-photo {
       position: absolute; inset: 0; z-index: 0;
       background:
@@ -56,534 +76,662 @@
         linear-gradient(180deg, oklch(0.11 0.020 264), oklch(0.14 0.026 264));
     }
     .bg-photo::before {
-      content: '';
-      position: absolute;
-      right: 2%; top: -18%;
-      width: 55%; aspect-ratio: 1;
-      border-radius: 50%;
+      content: ''; position: absolute; right: 2%; top: -18%;
+      width: 55%; aspect-ratio: 1; border-radius: 50%;
       border: 1px solid oklch(0.88 0.21 128 / .07);
-      box-shadow: 0 0 90px oklch(0.60 0.19 256 / .07) inset;
-    }
-    .bg-photo::after {
-      content: '';
-      position: absolute;
-      right: 8%; top: 10%;
-      width: 38%; aspect-ratio: 1;
-      border-radius: 50%;
-      border: 1px solid oklch(0.60 0.19 256 / .09);
     }
     .bg-tint {
       position: absolute; inset: 0; z-index: 1;
       background:
         radial-gradient(120% 90% at 78% 18%, oklch(0.60 0.19 256 / .28), transparent 55%),
-        radial-gradient(90% 80% at 8% 92%,  oklch(0.80 0.19 132 / .12), transparent 55%),
-        linear-gradient(180deg, oklch(0.12 0.022 264 / .65) 0%, oklch(0.12 0.022 264 / .80) 48%, var(--night-deep) 100%);
+        linear-gradient(180deg, oklch(0.12 0.022 264 / .65) 0%, var(--night-deep) 100%);
     }
-    .beam {
-      position: absolute; z-index: 1; top: -22%; width: 46%; height: 150%;
-      background: linear-gradient(180deg, oklch(0.7 0.18 252 / .10), transparent 62%);
-      filter: blur(14px); pointer-events: none; mix-blend-mode: screen;
-    }
-    .beam.b1 { left: 54%; transform: rotate(15deg); }
-    .beam.b2 { left: 74%; transform: rotate(8deg); opacity: .7; }
-    .pitch {
-      position: absolute; z-index: 1; left: -12%; bottom: -46%;
-      width: 64vh; height: 64vh; border-radius: 50%;
-      border: 2px solid oklch(0.88 0.21 128 / .14);
-      box-shadow: 0 0 60px oklch(0.88 0.21 128 / .05) inset;
-      pointer-events: none;
-    }
-    .grain {
-      position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: .45;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.5'/></svg>");
-      mix-blend-mode: overlay;
-    }
+    .beam { position: absolute; z-index: 1; top: -22%; width: 46%; height: 150%; background: linear-gradient(180deg, oklch(0.7 0.18 252 / .10), transparent 62%); filter: blur(14px); pointer-events: none; mix-blend-mode: screen; }
+    .b1 { left: 54%; transform: rotate(15deg); }
+    .b2 { left: 74%; transform: rotate(8deg); opacity: .7; }
+    .grain { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: .35; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.5'/></svg>"); mix-blend-mode: overlay; }
 
-    /* ── NAV ── */
-    nav {
-      position: relative; z-index: 5;
-      display: flex; align-items: center; justify-content: space-between; gap: 24px;
-      padding: 26px clamp(22px, 5vw, 72px) 0;
-    }
-    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
-    .brand .mark {
-      width: 34px; height: 34px; border-radius: 9px; position: relative;
-      background: conic-gradient(from 210deg, var(--cobalt), var(--lime), var(--cobalt-br), var(--cobalt));
-      box-shadow: 0 4px 18px oklch(0.60 0.19 256 / .5);
-      display: grid; place-items: center;
-    }
-    .brand .mark::after {
-      content: ""; position: absolute; inset: 5px; border-radius: 6px;
-      background: var(--night-deep);
-    }
-    .brand .mark span { position: relative; z-index: 1; font-family: "Anton"; font-size: 15px; color: var(--text); }
-    .brand b { font-family: "Archivo"; font-weight: 800; font-size: 17px; letter-spacing: .06em; color: var(--text); }
-    .brand b i { color: var(--lime); font-style: normal; }
-    .nav-links { display: flex; gap: 34px; align-items: center; }
-    .nav-links a {
-      color: var(--muted); text-decoration: none; font-size: 14.5px; font-weight: 500;
-      letter-spacing: .01em; transition: color .2s var(--ease); position: relative;
-    }
-    .nav-links a::after {
-      content: ""; position: absolute; left: 0; bottom: -6px; height: 2px; width: 0;
-      background: var(--lime); transition: width .25s var(--ease);
-    }
-    .nav-links a:hover { color: var(--text); }
-    .nav-links a:hover::after { width: 100%; }
-    .nav-cta {
-      font-family: "Space Grotesk"; font-weight: 700; font-size: 14px;
-      color: var(--night-deep); background: var(--lime);
-      border: none; border-radius: 999px; padding: 11px 20px; cursor: pointer;
-      letter-spacing: .01em; text-decoration: none;
-      transition: transform .18s var(--ease), box-shadow .25s var(--ease);
-      box-shadow: 0 6px 22px oklch(0.88 0.21 128 / .28);
-    }
-    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 30px oklch(0.88 0.21 128 / .42); }
-    @media (max-width: 880px) { .nav-links { display: none; } }
-
-    /* ── MAIN GRID ── */
-    .wrap {
+    .hero-wrap {
       position: relative; z-index: 5; flex: 1;
-      display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
-      align-items: center; gap: clamp(20px, 4vw, 64px);
-      padding: clamp(18px, 3vh, 40px) clamp(22px, 5vw, 72px) clamp(28px, 4vh, 56px);
+      display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+      align-items: center; gap: clamp(20px,4vw,64px);
+      padding: clamp(40px,5vh,72px) var(--px) clamp(28px,4vh,56px);
       max-width: 1480px; margin: 0 auto; width: 100%;
     }
 
-    /* ── COPY ── */
-    .kicker {
-      display: inline-flex; align-items: center; gap: 12px;
-      font-size: 12.5px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
-      color: var(--lime); margin-bottom: 26px;
-    }
-    .kicker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 10px var(--lime); }
-    .kicker .sep { color: var(--muted-2); letter-spacing: 0; }
-    .kicker .host { color: var(--muted); font-weight: 500; letter-spacing: .14em; }
-
-    h1 {
-      font-family: "Anton"; font-weight: 400; text-transform: uppercase;
-      line-height: .86; letter-spacing: .005em; color: var(--text);
-    }
-    h1 .l1 { display: block; font-size: clamp(24px, 3.7vw, 50px); color: var(--muted); letter-spacing: .04em; }
-    h1 .l2 {
-      display: block; font-size: clamp(58px, 9.6vw, 142px); white-space: nowrap;
-      background: linear-gradient(176deg, var(--text) 30%, oklch(0.86 0.02 256) 100%);
-      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 6px 30px oklch(0.6 0.19 256 / .25));
-    }
-    h1 .l2 em {
-      font-style: normal; display: block;
-      background: linear-gradient(176deg, var(--lime) 10%, var(--lime-deep) 90%);
-      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 4px 22px oklch(0.88 0.21 128 / .4));
-    }
-    h1 .l3 {
-      display: block; font-size: clamp(24px, 3.7vw, 50px); letter-spacing: .04em;
-      color: var(--text); -webkit-text-stroke: 0; margin-top: .06em;
-    }
-
-    .tagline {
-      margin-top: 26px; max-width: 34ch;
-      font-size: clamp(15px, 1.25vw, 18.5px); line-height: 1.55; color: var(--muted);
-      font-weight: 400; text-wrap: pretty;
-    }
+    /* copy */
+    .kicker { display: inline-flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--lime); margin-bottom: 24px; }
+    .kicker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 10px var(--lime); animation: pls 1.6s infinite; }
+    h1 { font-family: "Anton"; font-weight: 400; text-transform: uppercase; line-height: .86; }
+    .l1 { display: block; font-size: clamp(22px,3.4vw,46px); color: var(--muted); letter-spacing: .04em; }
+    .l2 { display: block; font-size: clamp(56px,9.2vw,136px); white-space: nowrap; background: linear-gradient(176deg, var(--text) 30%, oklch(0.86 0.02 256) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 6px 30px oklch(0.6 0.19 256 / .22)); }
+    .l2 em { font-style: normal; display: block; background: linear-gradient(176deg, var(--lime) 10%, var(--lime-deep) 90%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 4px 22px oklch(0.88 0.21 128 / .4)); }
+    .l3 { display: block; font-size: clamp(22px,3.4vw,46px); letter-spacing: .04em; margin-top: .06em; }
+    .tagline { margin-top: 22px; max-width: 34ch; font-size: clamp(15px,1.2vw,18px); line-height: 1.55; color: var(--muted); text-wrap: pretty; }
     .tagline b { color: var(--text); font-weight: 600; }
-
-    .feats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
-    .chip {
-      display: inline-flex; align-items: center; gap: 9px;
-      padding: 9px 15px 9px 12px; border-radius: 999px;
-      background: oklch(0.24 0.032 264 / .6); border: 1px solid var(--line);
-      font-size: 13.5px; font-weight: 500; color: var(--text);
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      transition: border-color .2s var(--ease), transform .2s var(--ease), background .2s var(--ease);
-    }
-    .chip:hover { transform: translateY(-2px); border-color: var(--cobalt-br); background: oklch(0.24 0.032 264 / .85); }
-    .chip svg { width: 16px; height: 16px; flex: none; color: var(--lime); }
-
-    .stores { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; align-items: center; }
-    .badge {
-      display: inline-flex; align-items: center; gap: 12px;
-      padding: 12px 22px 12px 18px; border-radius: 14px; cursor: pointer;
-      background: var(--text); color: var(--night-deep); text-decoration: none;
-      transition: transform .18s var(--ease), box-shadow .25s var(--ease);
-      box-shadow: 0 10px 30px oklch(0 0 0 / .45);
-    }
+    .feats { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 24px; }
+    .chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 11px; border-radius: 999px; background: oklch(0.24 0.032 264 / .6); border: 1px solid var(--line); font-size: 13px; font-weight: 500; color: var(--text); backdrop-filter: blur(8px); }
+    .chip svg { width: 15px; height: 15px; flex: none; color: var(--lime); }
+    .stores { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; align-items: center; }
+    .badge { display: inline-flex; align-items: center; gap: 12px; padding: 12px 22px 12px 18px; border-radius: 14px; background: var(--text); color: var(--night-deep); text-decoration: none; transition: transform .18s var(--ease), box-shadow .25s var(--ease); box-shadow: 0 10px 30px oklch(0 0 0 / .45); }
     .badge:hover { transform: translateY(-3px); box-shadow: 0 16px 40px oklch(0 0 0 / .55); }
     .badge svg { width: 26px; height: 26px; flex: none; }
-    .badge .txt { display: flex; flex-direction: column; line-height: 1.05; }
-    .badge .txt small { font-size: 9.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; opacity: .62; margin-bottom: 2px; }
-    .badge .txt span { font-family: "Archivo"; font-weight: 800; font-size: 18px; letter-spacing: .01em; }
-    .badge-soon {
-      display: inline-flex; align-items: center; gap: 12px;
-      padding: 12px 22px 12px 18px; border-radius: 14px;
-      background: oklch(0.22 0.032 264); border: 1px solid var(--line);
-      color: var(--muted);
-    }
-    .badge-soon svg { width: 26px; height: 26px; flex: none; }
-    .badge-soon .txt { display: flex; flex-direction: column; line-height: 1.05; }
-    .badge-soon .txt small { font-size: 9.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; opacity: .5; margin-bottom: 2px; }
-    .badge-soon .txt span { font-family: "Archivo"; font-weight: 700; font-size: 15px; letter-spacing: .01em; }
+    .badge .btxt { display: flex; flex-direction: column; line-height: 1.05; }
+    .badge .btxt small { font-size: 9px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; opacity: .62; margin-bottom: 2px; }
+    .badge .btxt span { font-family: "Archivo"; font-weight: 800; font-size: 18px; }
 
-    /* ── PHONE ── */
+    /* phone */
     .phone-col { display: flex; justify-content: center; align-items: center; position: relative; }
-    .glow {
-      position: absolute; width: 108%; height: 108%; border-radius: 50%;
-      background: radial-gradient(circle, oklch(0.6 0.19 256 / .38), transparent 62%);
-      filter: blur(30px); z-index: 0;
-    }
+    .glow { position: absolute; width: 110%; height: 110%; border-radius: 50%; background: radial-gradient(circle, oklch(0.6 0.19 256 / .35), transparent 62%); filter: blur(28px); z-index: 0; }
     .phone {
       position: relative; z-index: 1;
-      width: clamp(258px, 25vw, 340px); aspect-ratio: 296/620;
-      border-radius: 46px; padding: 13px;
+      width: clamp(240px, 23vw, 310px); aspect-ratio: 390/845;
+      border-radius: 44px; padding: 12px;
       background: linear-gradient(160deg, oklch(0.30 0.02 264), oklch(0.16 0.02 264));
-      box-shadow:
-        0 2px 0 oklch(0.42 0.02 264) inset,
-        0 40px 90px -20px oklch(0 0 0 / .7),
-        0 0 0 1px oklch(0.42 0.02 264);
-      transform: rotate(3deg) translateY(0);
+      box-shadow: 0 2px 0 oklch(0.42 0.02 264) inset, 0 40px 90px -20px oklch(0 0 0 / .7), 0 0 0 1px oklch(0.42 0.02 264);
+      transform: rotate(3deg);
     }
-    .screen {
-      position: relative; width: 100%; height: 100%; border-radius: 34px; overflow: hidden;
-      background: var(--night); display: flex; flex-direction: column;
+    .phone-screen {
+      width: 100%; height: 100%; border-radius: 34px; overflow: hidden;
+      position: relative; cursor: pointer;
     }
-    .notch {
-      position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
-      width: 96px; height: 24px; border-radius: 999px; background: oklch(0.08 0.01 264); z-index: 9;
-    }
-    .stat {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 13px 20px 6px; font-size: 12.5px; font-weight: 600; color: var(--text); z-index: 3;
-    }
-    .stat .ic-row { display: flex; gap: 6px; align-items: center; }
-    .stat svg { width: 15px; height: 13px; fill: var(--text); }
-    .app-head {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 6px 18px 12px;
-    }
-    .app-head .logo { display: flex; align-items: center; gap: 7px; font-family: "Archivo"; font-weight: 800; font-size: 14.5px; letter-spacing: .04em; }
-    .app-head .logo i { color: var(--lime); font-style: normal; }
-    .app-head .av { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--cobalt), var(--magenta)); border: 1.5px solid var(--line); }
-
-    .live-card {
-      position: relative; margin: 0 14px; border-radius: 20px; overflow: hidden;
-      border: 1px solid oklch(0.88 0.21 128 / .22);
-      box-shadow: 0 12px 30px -12px oklch(0 0 0 / .7);
-    }
-    .live-card .lc-bg {
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, oklch(0.18 0.08 256), oklch(0.14 0.05 140 / .6));
-    }
-    .live-card .lc-tint {
-      position: absolute; inset: 0;
-      background: linear-gradient(180deg, oklch(0.14 0.03 264 / .4), oklch(0.12 0.03 264 / .9));
-    }
-    .lc-inner { position: relative; padding: 13px 15px 15px; }
-    .lc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; }
-    .live-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--magenta); color: #fff; font-size: 9.5px; font-weight: 700;
-      letter-spacing: .08em; padding: 4px 9px; border-radius: 6px; text-transform: uppercase;
-    }
-    .live-badge .pulse { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: pulse 1.4s infinite; }
-    .lc-min { font-size: 11px; color: var(--lime); font-weight: 600; letter-spacing: .04em; }
-    .lc-score { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; }
-    .team { display: flex; flex-direction: column; align-items: center; gap: 7px; }
-    .team .flag { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; font-family: "Archivo"; font-weight: 800; font-size: 13px; color: #fff; border: 1px solid oklch(1 0 0 / .14); }
-    .team .nm { font-size: 11.5px; font-weight: 600; color: var(--text); letter-spacing: .02em; }
-    .score { font-family: "Anton"; font-size: 38px; line-height: 1; letter-spacing: .02em; display: flex; gap: 7px; }
-    .score .x { color: var(--muted-2); font-size: 24px; align-self: center; }
-
-    .tabs { display: flex; gap: 7px; padding: 14px 16px 8px; }
-    .tab { font-size: 12px; font-weight: 600; color: var(--muted); padding: 7px 13px; border-radius: 999px; letter-spacing: .01em; }
-    .tab.on { background: var(--cobalt); color: #fff; box-shadow: 0 4px 14px oklch(0.6 0.19 256 / .5); }
-
-    .fixtures { padding: 2px 14px; display: flex; flex-direction: column; gap: 8px; }
-    .fx {
-      display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px;
-      background: var(--night-2); border: 1px solid var(--line); border-radius: 13px; padding: 10px 12px;
-    }
-    .fx .pair { display: flex; align-items: center; gap: 8px; }
-    .fx .mini { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-family: "Archivo"; font-weight: 800; font-size: 9.5px; color: #fff; }
-    .fx .vs { font-size: 10px; color: var(--muted-2); font-weight: 600; }
-    .fx .codes b { font-size: 11.5px; font-weight: 600; color: var(--text); letter-spacing: .03em; }
-    .fx .time { text-align: right; }
-    .fx .time b { display: block; font-size: 12.5px; font-weight: 700; color: var(--text); }
-    .fx .time small { font-size: 9.5px; color: var(--muted); letter-spacing: .04em; }
-
-    .bnav { margin-top: auto; display: flex; justify-content: space-around; align-items: center; padding: 11px 14px 16px; border-top: 1px solid var(--line); background: oklch(0.18 0.026 264 / .9); }
-    .bnav .bi { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--muted-2); }
-    .bnav .bi.on { color: var(--lime); }
-    .bnav .bi svg { width: 21px; height: 21px; }
-    .bnav .bi small { font-size: 8.5px; font-weight: 600; letter-spacing: .02em; }
-
+    .phone-screen img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .4s ease; }
     .notif {
-      position: absolute; z-index: 4; left: -42px; top: 68%;
+      position: absolute; z-index: 4; left: -44px; top: 65%;
       display: flex; align-items: center; gap: 10px;
       background: oklch(0.22 0.03 264 / .92); border: 1px solid var(--line);
       border-radius: 14px; padding: 10px 14px; backdrop-filter: blur(10px);
       box-shadow: 0 16px 36px -12px oklch(0 0 0 / .7); max-width: 188px;
     }
-    .notif .go { width: 30px; height: 30px; border-radius: 9px; background: var(--lime); display: grid; place-items: center; flex: none; }
-    .notif .go b { font-family: "Anton"; color: var(--night-deep); font-size: 16px; }
+    .notif .go { width: 30px; height: 30px; border-radius: 9px; background: var(--lime); display: grid; place-items: center; flex: none; font-size: 16px; }
     .notif .tx b { display: block; font-size: 11.5px; color: var(--text); font-weight: 700; }
     .notif .tx small { font-size: 10px; color: var(--muted); }
-    @media (max-width: 1180px) { .notif { display: none; } }
 
-    /* ── HOSTS STRIP ── */
-    .hosts {
-      position: relative; z-index: 5; display: flex; align-items: center; gap: 22px;
-      padding: 0 clamp(22px, 5vw, 72px) 22px; color: var(--muted-2); font-size: 12px; letter-spacing: .04em;
+    /* screenshot dots */
+    .ss-dots { display: flex; gap: 6px; justify-content: center; margin-top: 16px; position: relative; z-index: 5; }
+    .ss-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--line); cursor: pointer; transition: background .2s, transform .2s; }
+    .ss-dots span.on { background: var(--lime); transform: scale(1.4); }
+
+    .hosts-strip {
+      position: relative; z-index: 5; display: flex; align-items: center; gap: 18px;
+      padding: 0 var(--px) 20px; color: var(--muted-2); font-size: 11px; letter-spacing: .04em;
     }
-    .hosts .ln { flex: 1; height: 1px; background: var(--line); }
-    .hosts b { color: var(--muted); font-weight: 600; letter-spacing: .18em; text-transform: uppercase; font-size: 11px; }
+    .hosts-strip .ln { flex: 1; height: 1px; background: var(--line); }
+    .hosts-strip b { color: var(--muted); font-weight: 600; letter-spacing: .18em; text-transform: uppercase; font-size: 10.5px; }
 
-    /* ── FOOTER ── */
-    footer {
-      position: relative; z-index: 5; border-top: 1px solid var(--line);
-      padding: 22px clamp(22px, 5vw, 72px);
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-      color: var(--muted-2); font-size: 12.5px;
-    }
-    footer a { color: var(--muted-2); text-decoration: none; }
-    footer a:hover { color: var(--text); }
-    footer .flinks { display: flex; gap: 24px; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 980px) {
-      .wrap { grid-template-columns: 1fr; gap: 36px; padding-top: 24px; }
+    @media (max-width: 940px) {
+      .hero-wrap { grid-template-columns: 1fr; }
       .phone-col { order: -1; }
       .phone { transform: rotate(0deg); }
-      .tagline { max-width: 46ch; }
+      .notif { display: none; }
     }
 
-    /* ── ANIMATIONS ── */
-    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .3; transform: scale(.7); } }
-    @keyframes floaty { 0%, 100% { transform: rotate(3deg) translateY(0); } 50% { transform: rotate(3deg) translateY(-12px); } }
-    @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+    /* ─── SECTIONS COMMON ─── */
+    section { padding: clamp(56px,8vh,100px) var(--px); }
+    section + section { border-top: 1px solid var(--line); }
+    .sec-label { font-size: 11px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--lime); margin-bottom: 14px; }
+    .sec-title { font-family: "Anton"; font-size: clamp(32px,4vw,54px); text-transform: uppercase; line-height: .9; margin-bottom: 20px; }
+    .sec-sub { color: var(--muted); font-size: clamp(15px,1.1vw,17px); max-width: 52ch; line-height: 1.6; text-wrap: pretty; }
 
+    /* ─── STATS BAR ─── */
+    .stats-bar {
+      display: flex; flex-wrap: wrap; gap: 0;
+      border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+      background: var(--night-2); margin-top: 40px;
+    }
+    .stat-item { flex: 1; min-width: 160px; padding: 28px 24px; border-right: 1px solid var(--line); }
+    .stat-item:last-child { border-right: none; }
+    .stat-item .num { font-family: "Anton"; font-size: 52px; line-height: 1; letter-spacing: .02em; }
+    .stat-item .num.lime { color: var(--lime); }
+    .stat-item .num.cobalt { color: var(--cobalt-br); }
+    .stat-item .lbl { font-size: 13px; color: var(--muted); margin-top: 6px; font-weight: 500; }
+    .stat-item .sub { font-size: 11px; color: var(--muted-2); margin-top: 3px; }
+    @media (max-width: 700px) { .stat-item { border-right: none; border-bottom: 1px solid var(--line); } .stat-item:last-child { border-bottom: none; } }
+
+    /* ─── FEATURES ─── */
+    .feat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 40px; }
+    .feat-card {
+      background: var(--night-2); border: 1px solid var(--line); border-radius: 18px; padding: 26px;
+      transition: border-color .2s, transform .2s;
+    }
+    .feat-card:hover { border-color: var(--cobalt); transform: translateY(-3px); }
+    .feat-icon { width: 46px; height: 46px; border-radius: 14px; background: oklch(0.18 0.06 256 / .6); border: 1px solid oklch(0.6 0.19 256 / .3); display: grid; place-items: center; margin-bottom: 16px; }
+    .feat-icon svg { width: 22px; height: 22px; color: var(--lime); }
+    .feat-card h3 { font-family: "Archivo"; font-weight: 800; font-size: 17px; margin-bottom: 8px; }
+    .feat-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ─── SCREENSHOTS GALLERY ─── */
+    .gallery { display: flex; gap: 16px; overflow-x: auto; padding: 8px 0 20px; margin-top: 36px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+    .gallery::-webkit-scrollbar { height: 4px; }
+    .gallery::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+    .gallery-item { flex: none; width: 200px; border-radius: 24px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 8px 30px oklch(0 0 0 / .5); transition: transform .2s; }
+    .gallery-item:hover { transform: translateY(-4px); }
+    .gallery-item img { width: 100%; display: block; }
+    .gallery-item span { display: block; text-align: center; font-size: 12px; color: var(--muted); padding: 10px 12px 12px; }
+
+    /* ─── GRUPOS ─── */
+    .groups-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; margin-top: 36px; }
+    .group-card { background: var(--night-2); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+    .group-card .gh { background: oklch(0.20 0.04 256); padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
+    .group-card .gh b { font-family: "Anton"; font-size: 18px; color: var(--lime); }
+    .group-card .gt { padding: 6px 0; }
+    .group-row { display: flex; align-items: center; gap: 10px; padding: 9px 16px; font-size: 14px; font-weight: 500; }
+    .group-row:hover { background: oklch(0.22 0.03 264 / .6); }
+    .group-row .fl { font-size: 20px; line-height: 1; }
+
+    /* ─── SEDES ─── */
+    .venues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 36px; }
+    .venue-card { background: var(--night-2); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 6px; transition: border-color .2s; }
+    .venue-card:hover { border-color: var(--cobalt); }
+    .venue-top { display: flex; align-items: center; justify-content: space-between; }
+    .venue-flag { font-size: 28px; }
+    .venue-cap { font-size: 12px; color: var(--lime); font-weight: 700; letter-spacing: .04em; }
+    .venue-city { font-family: "Archivo"; font-weight: 800; font-size: 17px; }
+    .venue-stadium { font-size: 13px; color: var(--muted); }
+
+    /* ─── API TRANSPARENCY ─── */
+    .api-box {
+      background: var(--night-2); border: 1px solid oklch(0.6 0.19 256 / .3);
+      border-radius: 20px; padding: 36px; margin-top: 36px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 36px;
+    }
+    .api-box h3 { font-family: "Archivo"; font-weight: 800; font-size: 20px; margin-bottom: 12px; }
+    .api-box p { font-size: 15px; color: var(--muted); line-height: 1.7; }
+    .api-box a { color: var(--cobalt-br); text-decoration: none; font-weight: 600; }
+    .api-box a:hover { text-decoration: underline; }
+    .api-tag { display: inline-flex; align-items: center; gap: 7px; background: oklch(0.18 0.06 256 / .5); border: 1px solid oklch(0.6 0.19 256 / .35); border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: var(--cobalt-br); margin-top: 12px; font-family: monospace; }
+    .no-tag { display: inline-flex; align-items: center; gap: 7px; background: oklch(0.18 0.05 140 / .4); border: 1px solid oklch(0.7 0.18 140 / .3); border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: var(--lime); margin-top: 8px; }
+    .tags-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    @media (max-width: 700px) { .api-box { grid-template-columns: 1fr; } }
+
+    /* ─── DOWNLOAD CTA ─── */
+    .cta-section { text-align: center; padding: clamp(64px,10vh,120px) var(--px); position: relative; overflow: hidden; }
+    .cta-glow { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 60%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, oklch(0.88 0.21 128 / .12), transparent 65%); filter: blur(20px); pointer-events: none; }
+    .cta-section h2 { font-family: "Anton"; font-size: clamp(36px,5vw,72px); text-transform: uppercase; line-height: .9; position: relative; z-index: 1; }
+    .cta-section h2 em { font-style: normal; color: var(--lime); display: block; }
+    .cta-section p { color: var(--muted); font-size: 17px; max-width: 40ch; margin: 18px auto 0; position: relative; z-index: 1; }
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 12px;
+      margin-top: 36px; padding: 16px 32px;
+      background: var(--lime); color: var(--night-deep);
+      font-family: "Archivo"; font-weight: 800; font-size: 18px;
+      border-radius: 16px; text-decoration: none; position: relative; z-index: 1;
+      transition: transform .2s var(--ease), box-shadow .25s var(--ease);
+      box-shadow: 0 12px 36px oklch(0.88 0.21 128 / .35);
+    }
+    .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 18px 50px oklch(0.88 0.21 128 / .5); }
+    .cta-btn svg { width: 28px; height: 28px; flex: none; }
+
+    /* ─── FOOTER ─── */
+    footer { border-top: 1px solid var(--line); padding: 24px var(--px); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: var(--muted-2); font-size: 12.5px; }
+    footer a { color: var(--muted-2); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+    .flinks { display: flex; gap: 24px; }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes pls { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.7)} }
+    @keyframes floaty { 0%,100%{transform:rotate(3deg) translateY(0)} 50%{transform:rotate(3deg) translateY(-10px)} }
+    @keyframes rise { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
     @media (prefers-reduced-motion: no-preference) {
-      .in .reveal { animation: rise .8s var(--ease) both; animation-delay: var(--d, 0ms); }
-      .in .phone  { animation: floaty 7s ease-in-out infinite 1.1s; }
+      .in .rev { animation: rise .8s var(--ease) both; animation-delay: var(--d,0ms); }
+      .in .phone { animation: floaty 7s ease-in-out infinite 1s; }
     }
+    @media (max-width: 940px) { .in .phone { animation: none; } }
   </style>
 </head>
 <body>
 
+<!-- NAV -->
+<nav class="topnav">
+  <a class="brand" href="/">
+    <img src="/icon.png" width="32" height="32" alt="Mundial 2026">
+    <b>MUNDIAL<i>26</i></b>
+  </a>
+  <div class="nav-links">
+    <a href="#funciones">Funciones</a>
+    <a href="#grupos">Grupos</a>
+    <a href="#sedes">Sedes</a>
+    <a href="/privacy.html">Privacidad</a>
+  </div>
+  <a class="nav-cta" href="#descargar">Descargar gratis</a>
+</nav>
+
+<!-- HERO -->
 <section class="hero" id="hero">
   <div class="bg-photo"></div>
   <div class="bg-tint"></div>
   <div class="beam b1"></div>
   <div class="beam b2"></div>
-  <div class="pitch"></div>
   <div class="grain"></div>
 
-  <!-- NAV -->
-  <nav class="reveal" style="--d:0ms">
-    <a class="brand" href="/">
-      <img src="/icon.png" width="34" height="34" alt="Mundial 2026" style="border-radius:9px;display:block;box-shadow:0 4px 14px oklch(0 0 0/.5)">
-      <b>MUNDIAL<i>26</i></b>
-    </a>
-    <div class="nav-links">
-      <a href="#funciones">Funciones</a>
-      <a href="/">Otras apps</a>
-      <a href="/privacy.html">Privacidad</a>
-    </div>
-    <a class="nav-cta" href="#descargar">Descargar</a>
-  </nav>
-
-  <!-- MAIN -->
-  <div class="wrap">
-
-    <!-- COPY -->
+  <div class="hero-wrap in">
     <div class="copy">
-      <div class="kicker reveal" style="--d:80ms">
+      <div class="kicker rev" style="--d:80ms">
         <span class="dot"></span>
         11 Jun – 19 Jul 2026
-        <span class="sep">·</span>
-        <span class="host">USA · Canadá · México</span>
+        <span style="color:var(--muted-2)">·</span>
+        <span style="color:var(--muted);font-weight:500;letter-spacing:.14em">USA · Canadá · México</span>
       </div>
-
       <h1>
-        <span class="l1 reveal" style="--d:160ms">Vive el</span>
-        <span class="l2 reveal" style="--d:240ms">Mundial <em>2026</em></span>
-        <span class="l3 reveal" style="--d:320ms">en tu mano</span>
+        <span class="l1 rev" style="--d:160ms">Vive el</span>
+        <span class="l2 rev" style="--d:240ms">Mundial <em>2026</em></span>
+        <span class="l3 rev" style="--d:320ms">en tu mano</span>
       </h1>
-
-      <p class="tagline reveal" style="--d:420ms">
+      <p class="tagline rev" style="--d:400ms">
         Todo el torneo, en tu bolsillo. <b>Resultados en vivo</b>, calendario completo,
         llaves eliminatorias y tu <b>prode</b> de principio a final. Gratis. Sin publicidad.
       </p>
-
-      <div class="feats reveal" id="funciones" style="--d:500ms">
-        <span class="chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z"/><path d="M12 7v5l3 2"/></svg>
-          Resultados en vivo
-        </span>
-        <span class="chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
-          Calendario
-        </span>
-        <span class="chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v6a6 6 0 0 0 12 0V3M4 21h16M9 21v-3a3 3 0 0 1 6 0v3"/></svg>
-          Llaves
-        </span>
-        <span class="chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-          Prode
-        </span>
-        <span class="chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
-          Mi Selección
-        </span>
+      <div class="feats rev" style="--d:480ms">
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 2"/></svg>En vivo</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>Fixture</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v6a6 6 0 0 0 12 0V3M4 21h16"/></svg>Llaves</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2L15 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26Z"/></svg>Prode</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Mi Selección</span>
       </div>
-
-      <div class="stores reveal" id="descargar" style="--d:580ms">
-        <a class="badge" href="https://play.google.com/store/apps/details?id=com.jottadev.mundial2026" target="_blank" rel="noopener" aria-label="Disponible en Google Play">
-          <svg viewBox="0 0 24 24">
-            <path fill="#34A853" d="M3.6 2.3 13 11.7l-2.7 2.7L3 4.2c-.2-.6 0-1.5.6-1.9Z"/>
-            <path fill="#4285F4" d="M3.6 2.3c.2-.1.5-.2.8-.2.3 0 .6.1.9.3l9.5 5.4-2.5 2.5L3.6 2.3Z"/>
-            <path fill="#FBBC04" d="M20.3 10.3c.7.4 1.1 1 1.1 1.7s-.4 1.3-1.1 1.7l-2.6 1.5-2.8-2.8 2.8-2.8 2.6 1.5Z"/>
-            <path fill="#EA4335" d="M3.6 21.7 12.3 13l2.5 2.5-9.4 5.4c-.3.2-.6.3-.9.3-.3 0-.6-.1-.9-.5Z"/>
-          </svg>
-          <span class="txt"><small>Disponible en</small><span>Google Play</span></span>
+      <div class="stores rev" id="descargar" style="--d:560ms">
+        <a class="badge" href="https://play.google.com/store/apps/details?id=com.jottadev.mundial2026" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path fill="#34A853" d="M3.6 2.3 13 11.7l-2.7 2.7L3 4.2c-.2-.6 0-1.5.6-1.9Z"/><path fill="#4285F4" d="M3.6 2.3c.5-.3 1.2-.3 1.7 0l9.5 5.4-2.5 2.5L3.6 2.3Z"/><path fill="#FBBC04" d="M20.3 10.3c.7.4 1.1 1 1.1 1.7s-.4 1.3-1.1 1.7l-2.6 1.5-2.8-2.8 2.8-2.8 2.6 1.5Z"/><path fill="#EA4335" d="M3.6 21.7 12.3 13l2.5 2.5-9.4 5.4c-.5.3-1.2.3-1.8-.2Z"/></svg>
+          <span class="btxt"><small>Disponible en</small><span>Google Play</span></span>
         </a>
-        <div class="badge-soon" aria-label="Próximamente en App Store">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M16.5 1.5c.1 1-.3 2-1 2.8-.7.8-1.8 1.4-2.8 1.3-.1-1 .4-2 1-2.7.7-.8 1.9-1.4 2.8-1.4ZM20 17.4c-.5 1.2-.8 1.7-1.5 2.7-1 1.4-2.3 3.1-4 3.1-1.5 0-1.9-1-3.9-1-2 0-2.4 1-3.9 1-1.7 0-3-1.6-4-3-2.6-4-2.9-8.6-1.3-11.1 1.1-1.7 2.9-2.7 4.5-2.7 1.7 0 2.8 1 4.2 1 1.4 0 2.2-1 4.2-1 1.5 0 3 .8 4.1 2.2-3.6 2-3 7 1.5 8.8Z"/>
-          </svg>
-          <span class="txt"><small>Próximamente en</small><span>App Store</span></span>
-        </div>
       </div>
     </div>
 
-    <!-- PHONE -->
-    <div class="phone-col reveal" style="--d:300ms">
+    <div class="phone-col rev" style="--d:280ms">
       <div class="glow"></div>
-
       <div class="phone">
         <div class="notif">
-          <span class="go"><b>⚽</b></span>
+          <span class="go">⚽</span>
           <span class="tx">
             <b>¡GOOOL de Argentina!</b>
             <small>ARG 1 – 0 AUS · 34'</small>
           </span>
         </div>
-
-        <div class="screen">
-          <div class="notch"></div>
-
-          <!-- status bar -->
-          <div class="stat">
-            <span>9:41</span>
-            <span class="ic-row">
-              <svg viewBox="0 0 24 16"><rect x="1" y="6" width="3" height="10" rx="1"/><rect x="6" y="3" width="3" height="13" rx="1"/><rect x="11" y="0" width="3" height="16" rx="1"/><rect x="16" y="3" width="3" height="13" rx="1" opacity=".4"/></svg>
-              <svg viewBox="0 0 24 16"><path d="M12 2C7 2 3 5 1 8c2 3 6 6 11 6s9-3 11-6c-2-3-6-6-11-6Z" opacity=".35"/><path d="M12 4c4 0 7.5 2.3 9.3 4-1.8 1.7-5.3 4-9.3 4S4.5 9.7 2.7 8C4.5 6.3 8 4 12 4Z"/></svg>
-              <svg viewBox="0 0 24 16"><rect x="1" y="2" width="20" height="12" rx="3" opacity=".5"/><rect x="3" y="4" width="14" height="8" rx="1.5"/><rect x="22" y="6" width="2" height="4" rx="1"/></svg>
-            </span>
-          </div>
-
-          <!-- app header -->
-          <div class="app-head">
-            <span class="logo">MUNDIAL<i>26</i></span>
-            <span class="av"></span>
-          </div>
-
-          <!-- live match -->
-          <div class="live-card">
-            <div class="lc-bg"></div>
-            <div class="lc-tint"></div>
-            <div class="lc-inner">
-              <div class="lc-top">
-                <span class="live-badge"><span class="pulse"></span> En vivo</span>
-                <span class="lc-min">34'</span>
-              </div>
-              <div class="lc-score">
-                <div class="team">
-                  <span class="flag" style="background:linear-gradient(135deg,#74acdf,#fff 50%,#74acdf);color:#74acdf">ARG</span>
-                  <span class="nm">Argentina</span>
-                </div>
-                <div class="score">1 <span class="x">–</span> 0</div>
-                <div class="team">
-                  <span class="flag" style="background:linear-gradient(135deg,#003f8a,#fff 50%,#003f8a);color:#fff">AUS</span>
-                  <span class="nm">Australia</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- tabs -->
-          <div class="tabs">
-            <span class="tab on">Hoy</span>
-            <span class="tab">Tabla</span>
-            <span class="tab">Llaves</span>
-          </div>
-
-          <!-- fixtures -->
-          <div class="fixtures">
-            <div class="fx">
-              <div class="pair">
-                <span class="mini" style="background:linear-gradient(135deg,#006847,#ce1126)">MEX</span>
-                <span class="vs">vs</span>
-                <span class="mini" style="background:linear-gradient(135deg,#007a4d,#ffb81c)">ZAF</span>
-              </div>
-              <div class="codes"><b>México · Sudáfrica</b></div>
-              <div class="time"><b>19:00</b><small>Dallas</small></div>
-            </div>
-            <div class="fx">
-              <div class="pair">
-                <span class="mini" style="background:linear-gradient(135deg,#aa151b,#f1bf00)">ESP</span>
-                <span class="vs">vs</span>
-                <span class="mini" style="background:linear-gradient(135deg,#0055a4,#fff 50%,#ef4135)">FRA</span>
-              </div>
-              <div class="codes"><b>España · Francia</b></div>
-              <div class="time"><b>22:00</b><small>MetLife</small></div>
-            </div>
-            <div class="fx">
-              <div class="pair">
-                <span class="mini" style="background:linear-gradient(135deg,#003DA5,#fff 50%,#003DA5)">BRA</span>
-                <span class="vs">vs</span>
-                <span class="mini" style="background:linear-gradient(135deg,#dc143c,#fff 50%,#dc143c)">ENG</span>
-              </div>
-              <div class="codes"><b>Brasil · Inglaterra</b></div>
-              <div class="time"><b>02:00</b><small>SoFi</small></div>
-            </div>
-          </div>
-
-          <!-- bottom nav -->
-          <div class="bnav">
-            <div class="bi on">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
-              <small>Fixture</small>
-            </div>
-            <div class="bi">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-              <small>Tabla</small>
-            </div>
-            <div class="bi">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v6a6 6 0 0 0 12 0V3M4 21h16M9 21v-3a3 3 0 0 1 6 0v3"/></svg>
-              <small>Llaves</small>
-            </div>
-            <div class="bi">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
-              <small>País</small>
-            </div>
-            <div class="bi">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-              <small>Más</small>
-            </div>
-          </div>
-        </div><!-- /screen -->
-      </div><!-- /phone -->
-    </div><!-- /phone-col -->
-  </div><!-- /wrap -->
-
-  <!-- HOSTS STRIP -->
-  <div class="hosts reveal" style="--d:660ms">
-    <b>48 selecciones</b><span class="ln"></span>
-    <b>16 sedes</b><span class="ln"></span>
-    <b>104 partidos</b>
+        <div class="phone-screen" onclick="nextShot()" title="Tocá para ver otra pantalla">
+          <img id="ss-img" src="/ss_fixture.png" alt="Fixture de la app Mundial 2026">
+        </div>
+      </div>
+      <div class="ss-dots">
+        <span class="on" onclick="setShot(0)"></span>
+        <span onclick="setShot(1)"></span>
+        <span onclick="setShot(2)"></span>
+        <span onclick="setShot(3)"></span>
+      </div>
+    </div>
   </div>
+
+  <div class="hosts-strip in">
+    <b>48 selecciones</b><span class="ln"></span>
+    <b>12 grupos</b><span class="ln"></span>
+    <b>104 partidos</b><span class="ln"></span>
+    <b>16 sedes</b>
+  </div>
+</section>
+
+<!-- TORNEO -->
+<section id="torneo">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="sec-label">El torneo</div>
+    <h2 class="sec-title">FIFA World Cup<br><span style="color:var(--lime)">2026</span></h2>
+    <p class="sec-sub">La primera edición con 48 selecciones distribuidas en 12 grupos. Tres países sede, 16 estadios y el torneo de fútbol más grande de la historia.</p>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="num lime">48</div>
+        <div class="lbl">Selecciones</div>
+        <div class="sub">Primera vez en la historia</div>
+      </div>
+      <div class="stat-item">
+        <div class="num cobalt">104</div>
+        <div class="lbl">Partidos</div>
+        <div class="sub">Fase grupos + eliminatorias</div>
+      </div>
+      <div class="stat-item">
+        <div class="num lime">12</div>
+        <div class="lbl">Grupos</div>
+        <div class="sub">A — L · 4 equipos c/u</div>
+      </div>
+      <div class="stat-item">
+        <div class="num cobalt">16</div>
+        <div class="lbl">Estadios</div>
+        <div class="sub">USA · México · Canadá</div>
+      </div>
+      <div class="stat-item">
+        <div class="num" style="font-size:36px;padding-top:8px">39 días</div>
+        <div class="lbl">Duración</div>
+        <div class="sub">11 jun – 19 jul 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="funciones">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="sec-label">La app</div>
+    <h2 class="sec-title">Todo lo que<br>necesitás <span style="color:var(--lime)">saber</span></h2>
+    <p class="sec-sub">Diseñada para los que siguen el fútbol en serio. Sin publicidad, sin registro, sin rastreo.</p>
+
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3>Resultados en vivo</h3>
+        <p>Marcadores actualizados durante el partido. Badge animado rojo en los partidos en curso. Notificación de gol si seguís a tu selección.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg></div>
+        <h3>Fixture completo</h3>
+        <p>Todos los partidos agrupados por fecha con horario local automático, banderas de cada selección y chip de navegación por días.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+        <h3>Tabla de posiciones</h3>
+        <p>Grupos A a L con PJ, G, E, P, GF, GC, DG y PTS. Los dos clasificados de cada grupo destacados en verde. Scroll horizontal sincronizado.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v6a6 6 0 0 0 12 0V3M4 21h16M9 21v-3a3 3 0 0 1 6 0v3"/></svg></div>
+        <h3>Llaves eliminatorias</h3>
+        <p>Dieciséisavos, octavos, cuartos, semis y la gran final del 19 de julio. Navegación con paginado entre fases.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+        <h3>Mi Selección</h3>
+        <p>Elegís tu país favorito y la app filtra todos sus partidos automáticamente. Tu bandera aparece en la barra de navegación y en el header.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8Z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg></div>
+        <h3>Prode</h3>
+        <p>Pronosticá el resultado de cada partido antes de que empiece. Tus predicciones se guardan solo en tu dispositivo, sin cuenta ni registro.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>
+        <h3>Historia del Mundial</h3>
+        <p>Todos los campeones desde Uruguay 1930 hasta Qatar 2022. Subcampeón, goleador y sede de cada edición en un formato limpio y navegable.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-9.33-5M10.7 2.4A6 6 0 0 1 18 8c0 4-3 5.5-3 9H9c0-3.5-3-5-3-9a6 6 0 0 1 1-3.32"/><path d="M9 17h6M12 21v-4"/></svg></div>
+        <h3>Notificaciones</h3>
+        <p>Recordatorio automático 1 minuto antes de cada partido de tu selección. Sin spam, sin servidores — todo procesado localmente con WorkManager.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg></div>
+        <h3>Modo oscuro</h3>
+        <p>Tema claro, oscuro o automático según tu sistema. Material You con colores dinámicos en Android 12+. Sin embargo que no mira el fútbol de noche.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCREENSHOTS GALLERY -->
+<section style="padding-top:0;border-top:none">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="sec-label">Capturas reales</div>
+    <h2 class="sec-title">Así se <span style="color:var(--lime)">ve</span></h2>
+    <div class="gallery">
+      <div class="gallery-item"><img src="/ss_fixture.png" alt="Fixture"><span>Fixture</span></div>
+      <div class="gallery-item"><img src="/ss_tabla.png"   alt="Tabla"><span>Tabla</span></div>
+      <div class="gallery-item"><img src="/ss_pais.png"    alt="Mi Selección"><span>Mi Selección</span></div>
+      <div class="gallery-item"><img src="/ss_llaves.png"  alt="Llaves"><span>Llaves</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- GRUPOS -->
+<section id="grupos">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="sec-label">Fase de grupos</div>
+    <h2 class="sec-title">Los 12 <span style="color:var(--lime)">grupos</span></h2>
+    <p class="sec-sub">48 selecciones en grupos de 4. Los dos primeros de cada grupo más los 8 mejores terceros avanzan a octavos de final.</p>
+
+    <div class="groups-grid">
+      <div class="group-card">
+        <div class="gh"><b>A</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇲🇽</span> México</div>
+          <div class="group-row"><span class="fl">🇪🇸</span> España</div>
+          <div class="group-row"><span class="fl">🇳🇴</span> Noruega</div>
+          <div class="group-row"><span class="fl">🇯🇲</span> Jamaica</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>B</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇨🇦</span> Canadá</div>
+          <div class="group-row"><span class="fl">🇦🇷</span> Argentina</div>
+          <div class="group-row"><span class="fl">🇵🇪</span> Perú</div>
+          <div class="group-row"><span class="fl">🌐</span> Rep. Inter-conf.</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>C</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇫🇷</span> Francia</div>
+          <div class="group-row"><span class="fl">🇨🇴</span> Colombia</div>
+          <div class="group-row"><span class="fl">🇸🇳</span> Senegal</div>
+          <div class="group-row"><span class="fl">🇳🇿</span> Nueva Zelanda</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>D</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇺🇸</span> Estados Unidos</div>
+          <div class="group-row"><span class="fl">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> Inglaterra</div>
+          <div class="group-row"><span class="fl">🇺🇾</span> Uruguay</div>
+          <div class="group-row"><span class="fl">🇵🇦</span> Panamá</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>E</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇧🇷</span> Brasil</div>
+          <div class="group-row"><span class="fl">🇨🇭</span> Suiza</div>
+          <div class="group-row"><span class="fl">🇯🇵</span> Japón</div>
+          <div class="group-row"><span class="fl">🇪🇨</span> Ecuador</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>F</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇧🇪</span> Bélgica</div>
+          <div class="group-row"><span class="fl">🇭🇷</span> Croacia</div>
+          <div class="group-row"><span class="fl">🇲🇦</span> Marruecos</div>
+          <div class="group-row"><span class="fl">🇸🇦</span> Arabia Saudita</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>G</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇩🇪</span> Alemania</div>
+          <div class="group-row"><span class="fl">🇳🇱</span> Países Bajos</div>
+          <div class="group-row"><span class="fl">🇦🇹</span> Austria</div>
+          <div class="group-row"><span class="fl">🇺🇿</span> Uzbekistán</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>H</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇵🇹</span> Portugal</div>
+          <div class="group-row"><span class="fl">🇰🇷</span> Corea del Sur</div>
+          <div class="group-row"><span class="fl">🇹🇳</span> Túnez</div>
+          <div class="group-row"><span class="fl">🇮🇷</span> Irán</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>I</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇨🇿</span> Rep. Checa</div>
+          <div class="group-row"><span class="fl">🇧🇦</span> Bosnia-Herz.</div>
+          <div class="group-row"><span class="fl">🇵🇾</span> Paraguay</div>
+          <div class="group-row"><span class="fl">🇮🇶</span> Irak</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>J</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇦🇺</span> Australia</div>
+          <div class="group-row"><span class="fl">🇪🇬</span> Egipto</div>
+          <div class="group-row"><span class="fl">🇩🇿</span> Argelia</div>
+          <div class="group-row"><span class="fl">🇶🇦</span> Catar</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>K</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span> Escocia</div>
+          <div class="group-row"><span class="fl">🇨🇮</span> Costa de Marfil</div>
+          <div class="group-row"><span class="fl">🇬🇭</span> Ghana</div>
+          <div class="group-row"><span class="fl">🇨🇻</span> Cabo Verde</div>
+        </div>
+      </div>
+      <div class="group-card">
+        <div class="gh"><b>L</b></div>
+        <div class="gt">
+          <div class="group-row"><span class="fl">🇸🇪</span> Suecia</div>
+          <div class="group-row"><span class="fl">🇯🇴</span> Jordania</div>
+          <div class="group-row"><span class="fl">🇨🇼</span> Curazao</div>
+          <div class="group-row"><span class="fl">🇭🇹</span> Haití</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEDES -->
+<section id="sedes">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="sec-label">Estadios</div>
+    <h2 class="sec-title">16 <span style="color:var(--lime)">sedes</span></h2>
+    <p class="sec-sub">Estadios en Estados Unidos, México y Canadá. La final se juega en el MetLife Stadium, Nueva York.</p>
+
+    <div class="venues-grid">
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">94 000</span></div>
+        <div class="venue-city">Dallas</div>
+        <div class="venue-stadium">AT&T Stadium</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">82 500 · FINAL</span></div>
+        <div class="venue-city">Nueva York / New Jersey</div>
+        <div class="venue-stadium">MetLife Stadium</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇲🇽</span><span class="venue-cap">83 000</span></div>
+        <div class="venue-city">Ciudad de México</div>
+        <div class="venue-stadium">Estadio Azteca</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">75 000</span></div>
+        <div class="venue-city">Atlanta</div>
+        <div class="venue-stadium">Mercedes-Benz Stadium</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">73 000</span></div>
+        <div class="venue-city">Kansas City</div>
+        <div class="venue-stadium">Arrowhead Stadium</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">72 000</span></div>
+        <div class="venue-city">Houston</div>
+        <div class="venue-stadium">NRG Stadium</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">71 000</span></div>
+        <div class="venue-city">San Francisco Bay Area</div>
+        <div class="venue-stadium">Levi's Stadium</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">70 000</span></div>
+        <div class="venue-city">Los Ángeles</div>
+        <div class="venue-stadium">SoFi Stadium</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">69 000</span></div>
+        <div class="venue-city">Philadelphia</div>
+        <div class="venue-stadium">Lincoln Financial Field</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">69 000</span></div>
+        <div class="venue-city">Seattle</div>
+        <div class="venue-stadium">Lumen Field</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">65 000</span></div>
+        <div class="venue-city">Boston</div>
+        <div class="venue-stadium">Gillette Stadium</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇺🇸</span><span class="venue-cap">65 000</span></div>
+        <div class="venue-city">Miami</div>
+        <div class="venue-stadium">Hard Rock Stadium</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇨🇦</span><span class="venue-cap">54 000</span></div>
+        <div class="venue-city">Vancouver</div>
+        <div class="venue-stadium">BC Place</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇲🇽</span><span class="venue-cap">53 500</span></div>
+        <div class="venue-city">Monterrey</div>
+        <div class="venue-stadium">Estadio BBVA</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇲🇽</span><span class="venue-cap">48 000</span></div>
+        <div class="venue-city">Guadalajara</div>
+        <div class="venue-stadium">Estadio Akron</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-top"><span class="venue-flag">🇨🇦</span><span class="venue-cap">45 000</span></div>
+        <div class="venue-city">Toronto</div>
+        <div class="venue-stadium">BMO Field</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- API TRANSPARENCY -->
+<section id="datos">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="sec-label">Datos y transparencia</div>
+    <h2 class="sec-title">De dónde vienen<br>los <span style="color:var(--lime)">datos</span></h2>
+    <p class="sec-sub">Creemos que la transparencia en las fuentes de datos es tan importante como la privacidad. Por eso lo explicamos sin letra chica.</p>
+
+    <div class="api-box">
+      <div>
+        <h3>Fuente de datos del torneo</h3>
+        <p>Todos los partidos, resultados, tabla de posiciones y clasificaciones provienen de <a href="https://www.football-data.org" target="_blank" rel="noopener">football-data.org</a>, una API pública de datos de fútbol usada por miles de desarrolladores en todo el mundo.</p>
+        <p style="margin-top:12px">La app realiza llamadas HTTPS a:</p>
+        <div class="tags-row">
+          <span class="api-tag">GET /competitions/WC/matches</span>
+          <span class="api-tag">GET /competitions/WC/standings</span>
+        </div>
+        <p style="margin-top:14px;font-size:13px;color:var(--muted-2)">Solo se envía un token de autenticación de API como header HTTP. Sin datos del usuario, sin identificadores del dispositivo.</p>
+      </div>
+      <div>
+        <h3>Lo que nunca enviamos</h3>
+        <p>A diferencia de muchas apps, Mundial 2026 no transmite ningún dato personal. Tu privacidad no es un feature opcional.</p>
+        <div class="tags-row">
+          <span class="no-tag">✓ Sin publicidad</span>
+          <span class="no-tag">✓ Sin analíticas</span>
+          <span class="no-tag">✓ Sin crashlytics</span>
+          <span class="no-tag">✓ Sin Firebase</span>
+          <span class="no-tag">✓ Sin GPS</span>
+          <span class="no-tag">✓ Sin cuenta</span>
+        </div>
+        <p style="margin-top:16px">Todas tus preferencias (equipo favorito, prode, ligas) se guardan únicamente en tu dispositivo con <strong style="color:var(--text)">SharedPreferences</strong>. Podés borrarlas en cualquier momento desde Ajustes del sistema.</p>
+        <p style="margin-top:10px"><a href="/privacy.html">Leer la Política de Privacidad completa →</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <h2>Descargá<br><em>gratis ahora</em></h2>
+  <p>Sin publicidad. Sin registro. Todo el Mundial 2026 en tu bolsillo.</p>
+  <a class="cta-btn" href="https://play.google.com/store/apps/details?id=com.jottadev.mundial2026" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24"><path fill="#111" d="M3.6 2.3 13 11.7l-2.7 2.7L3 4.2c-.2-.6 0-1.5.6-1.9Z"/><path fill="#333" d="M3.6 2.3c.5-.3 1.2-.3 1.7 0l9.5 5.4-2.5 2.5L3.6 2.3Z"/><path fill="#555" d="M20.3 10.3c.7.4 1.1 1 1.1 1.7s-.4 1.3-1.1 1.7l-2.6 1.5-2.8-2.8 2.8-2.8 2.6 1.5Z"/><path fill="#222" d="M3.6 21.7 12.3 13l2.5 2.5-9.4 5.4c-.5.3-1.2.3-1.8-.2Z"/></svg>
+    Descargar en Google Play
+  </a>
 </section>
 
 <footer>
@@ -595,6 +743,28 @@
 </footer>
 
 <script>
+  const shots = ['/ss_fixture.png','/ss_tabla.png','/ss_pais.png','/ss_llaves.png'];
+  const labels = ['Fixture','Tabla de posiciones','Mi Selección','Llaves'];
+  let cur = 0;
+  const img = document.getElementById('ss-img');
+  const dots = document.querySelectorAll('.ss-dots span');
+
+  function setShot(i) {
+    cur = i;
+    img.style.opacity = '0';
+    setTimeout(() => {
+      img.src = shots[cur];
+      img.alt = labels[cur];
+      img.style.opacity = '1';
+    }, 200);
+    dots.forEach((d,j) => d.classList.toggle('on', j === cur));
+  }
+  function nextShot() { setShot((cur + 1) % shots.length); }
+
+  // Auto-cycle every 4s
+  setInterval(nextShot, 4000);
+
+  // Entrance animation
   requestAnimationFrame(() => document.getElementById('hero').classList.add('in'));
 </script>
 </body>
